@@ -8,7 +8,7 @@ connectDB()
   .then(() => {
     app.on("error", (error) => {
       console.log("Error at listining at port: ", error);
-      throw error;
+      throw new Error("Error at listining at port: ", error);
     });
 
     app.listen(process.env.PORT || 8000, () => {
