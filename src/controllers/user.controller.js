@@ -25,9 +25,12 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new ApiError(409, "User already exist");
   }
 
-  // 3. File upload avatar
+  // 3 . File upload avatar
   const avatarLocalPath = req.files?.avatar[0]?.path;
   const coverimageLocalPath = req.files?.coverimage[0]?.path;
+  console.log(avatarLocalPath);
+  console.log(coverimageLocalPath);
+
   if (!avatarLocalPath) {
     throw new ApiError(400, "Avatar file is required!");
   }
@@ -35,6 +38,8 @@ const registerUser = asyncHandler(async (req, res) => {
   //  Upload the the image files on cloudinary
   const avatar = await uploadOnCloudinary(avatarLocalPath);
   const coverimage = await uploadOnCloudinary(coverimageLocalPath);
+  console.log(avatar);
+  console.log(coverimage);
   if (!avatar) {
     throw new ApiError(400, "Avatar file is not uploaded in Cloudinary");
   }
