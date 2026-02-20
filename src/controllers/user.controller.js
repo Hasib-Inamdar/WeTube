@@ -120,9 +120,9 @@ const loginUser = asyncHandler(async (req, res) => {
     user._id,
   );
 
-  const loggedInUser = await user
-    .findById(user._id)
-    .select("-password, -refereshToken");
+  const loggedInUser = await User.findById(user._id).select(
+    "-password -refereshToken",
+  );
 
   const options = {
     httpOnly: true,
@@ -154,4 +154,6 @@ const loginUser = asyncHandler(async (req, res) => {
   */
 });
 
-export { registerUser, loginUser };
+const logoutUser = asyncHandler(async (req, res) => {});
+
+export { registerUser, loginUser, logoutUser };
