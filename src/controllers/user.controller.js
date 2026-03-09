@@ -322,6 +322,55 @@ const updateCoverImage = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, user, "Cover image update successfully"));
 });
 
+const getUserChannelProfile = asyncHandler(async (req, res) => {
+  const { username } = req.params;
+  if (!username?.trim()) {
+    throw new ApiError(400, "username is missing");
+  }
+
+  await User.aggregate([
+    // Stage 1
+    {
+      $match: {
+        username: username?.toLowerCase(),
+      },
+    },
+
+    //Stage 2
+    {
+      $lookup: {
+        from: "subscriptions",
+        localField: "_id",
+        foreignField: "channel",
+        as: "subscribers",
+      },
+    },
+
+    // Stage 3
+    {
+      $lookup: {
+        from: "subscriptions",
+        localField: "_id",
+        foreignField: "subscriber",
+        as: "subscribedTo",
+      },
+    },
+
+    //Stage 3
+    {
+      $addFields: {
+        subscriberCount: {
+          $size: "$subscribers",
+        },
+
+        channelSubscribedTo: {
+          $size: "$subscribedTo",
+        },
+      },
+    },
+  ]);
+});
+
 export {
   registerUser,
   loginUser,
@@ -332,4 +381,5 @@ export {
   updateAccountDetails,
   updateUserAvatar,
   updateCoverImage,
+  getUserChannelProfile,
 };
