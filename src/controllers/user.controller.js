@@ -6,7 +6,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 
-const generateAccessAndRefereshTokens = async (userID) => {
+const generateAccessAndRefreshTokens = async (userID) => {
   try {
     const user = await User.findById(userID);
     const accesstoken = user.generateAccessToken();
@@ -118,7 +118,7 @@ const loginUser = asyncHandler(async (req, res) => {
     throw new ApiError(401, "Invalid user crediantials");
   }
 
-  const { accesstoken, refreshtoken } = await generateAccessAndRefereshTokens(
+  const { accesstoken, refreshtoken } = await generateAccessAndRefreshTokens(
     user._id,
   );
 
@@ -181,7 +181,8 @@ const logoutUser = asyncHandler(async (req, res) => {
 });
 
 const refreshAccessToken = asyncHandler(async (req, res) => {
-  const incomingRefreshToken = req.cookie.refreshtoken || req.body.refreshtoken;
+  const incomingRefreshToken =
+    req.cookies.refreshtoken || req.body.refreshtoken;
   if (!incomingRefreshToken) {
     throw new ApiError(401, "Unauthorized request");
   }
@@ -208,7 +209,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     };
 
     const { accesstoken, newrefreshtoken } =
-      await generateAccessAndRefereshTokens(user._id);
+      await generateAccessAndRefreshTokens(user._id);
     return res
       .status(200)
       .cookie("accesstoken", accesstoken, options)
@@ -453,7 +454,7 @@ const getWatchHistory = asyncHandler(async (req, res) => {
     throw new ApiError(404, "No such user exists");
   }
 
-  return res()
+  return res
     .status(200)
     .json(
       new ApiResponse(
